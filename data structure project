@@ -1,0 +1,404 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+class product {
+public:
+    int pid;
+    string pname;
+    int stock;
+    int prc;
+    int expm;
+    int expy;
+    product* pnext;
+};
+
+class clistpro {
+public:
+    product* phead;
+    product* ptail;
+
+    clistpro() {
+        phead = NULL;
+        ptail = NULL;
+    }
+
+    ~clistpro() {
+        product* ptv;
+        ptv = phead;
+        while (ptv != NULL) {
+            phead = phead->pnext;
+            delete ptv;
+            ptv = phead;
+        }
+    }
+
+    void attach(product* pnn) {
+        if (phead == NULL) {
+            phead = pnn;
+            ptail = pnn;
+        }
+        else {
+            ptail->pnext = pnn;
+            ptail = pnn;
+        }
+    }
+
+    void display() {
+        product* ptv = phead;
+        while (ptv != NULL) {
+            cout << ptv->pid << ' ';
+            cout << ptv->pname << ' ';
+            cout << ptv->prc << ' ';
+            cout << ptv->expm << ' ';
+            cout << ptv->expy << endl;
+            ptv = ptv->pnext;
+        }
+    }
+};
+
+class customer {
+public:
+    int cid;
+    string cname;
+    customer* pnext;
+};
+
+class clistcus {
+public:
+    customer* phead;
+    customer* ptail;
+
+    clistcus() {
+        phead = NULL;
+        ptail = NULL;
+    }
+
+    ~clistcus() {
+        customer* ptv;
+        ptv = phead;
+        while (ptv != NULL) {
+            phead = phead->pnext;
+            delete ptv;
+            ptv = phead;
+        }
+    }
+
+    void attach(customer* pnn) {
+        if (phead == NULL) {
+            phead = pnn;
+            ptail = pnn;
+        }
+        else {
+            ptail->pnext = pnn;
+            ptail = pnn;
+        }
+    }
+
+    void display() {
+        customer* ptv = phead;
+        while (ptv != NULL) {
+            cout << ptv->cid << ' ';
+            cout << ptv->cname << endl;
+            ptv = ptv->pnext;
+        }
+    }
+};
+
+class orders {
+public:
+    int pid;
+    int cid;
+    int totprc;
+    int purm;
+    int pury;
+    orders* pnext;
+};
+
+class clistord {
+public:
+    orders* phead;
+    orders* ptail;
+
+    clistord() {
+        phead = NULL;
+        ptail = NULL;
+    }
+
+    ~clistord() {
+        orders* ptv;
+        ptv = phead;
+        while (ptv != NULL) {
+            phead = phead->pnext;
+            delete ptv;
+            ptv = phead;
+        }
+    }
+
+    void attach(orders* pnn) {
+        if (phead == NULL) {
+            phead = pnn;
+            ptail = pnn;
+        }
+        else {
+            ptail->pnext = pnn;
+            ptail = pnn;
+        }
+    }
+
+    void display() {
+        orders* ptv = phead;
+        while (ptv != NULL) {
+            cout << ptv->pid << ' ';
+            cout << ptv->cid << ' ';
+            cout << ptv->totprc << ' ';
+            cout << ptv->purm << ' ';
+            cout << ptv->pury << endl;
+            ptv = ptv->pnext;
+        }
+    }
+};
+
+void buy(clistpro& p, clistcus& c, clistord& o) {
+    // Prompt user for input
+    cout << "Enter customer ID: ";
+    int customerId;
+    cin >> customerId;
+
+    // Check if customer exists in the customer list
+    customer* currentCustomer = c.phead;
+    while (currentCustomer != NULL) {
+        if (currentCustomer->cid == customerId) {
+            break;
+        }
+        currentCustomer = currentCustomer->pnext;
+    }
+
+    if (currentCustomer == NULL) {
+        // Create a new customer and add it to the customer list
+        customer* newCustomer = new customer;
+        newCustomer->cid = customerId;
+        // ... (assign values to newCustomer members if needed)
+        newCustomer->pnext = NULL;
+        c.attach(newCustomer);
+        currentCustomer = newCustomer;
+    }
+
+    // Prompt user for input
+    cout << "Enter product ID: ";
+    int productId;
+    cin >> productId;
+
+    // Find the product and decrement the stock
+    product* productToBuy = NULL;
+    product* currentProduct = p.phead;
+    while (currentProduct != NULL) {
+        if (currentProduct->pid == productId) {
+            productToBuy = currentProduct;
+            break;
+        }
+        currentProduct = currentProduct->pnext;
+    }
+    if (currentProduct == NULL)
+    {
+        product* newproduct = new product;
+        newproduct->pid = productId;
+        cout << "enter the new prod"; cin >> newproduct->pname;
+        newproduct->pnext = NULL;
+        p.attach(newproduct);
+        currentProduct = newproduct;
+    }
+    if (productToBuy != NULL) {
+        // Prompt user for input
+        cout << "Enter quantity: ";
+        int quantity;
+        cin >> quantity;
+
+        // Check if sufficient stock is available
+        if (productToBuy->stock >= quantity) {
+            // Decrement the stock
+            productToBuy->stock -= quantity;
+
+            // Prompt user for input
+            cout << "Enter purchase month: ";
+            int purchaseMonth;
+            cin >> purchaseMonth;
+
+            // Prompt user for input
+            cout << "Enter purchase year: ";
+            int purchaseYear;
+            cin >> purchaseYear;
+
+            // Create a new order and add it to the order list
+            orders* newOrder = new orders;
+            newOrder->pid = productId;
+            newOrder->cid = customerId;
+            newOrder->totprc = quantity * productToBuy->prc;
+            newOrder->purm = purchaseMonth;
+            newOrder->pury = purchaseYear;
+            // ... (assign values to newOrder members if needed)
+            newOrder->pnext = NULL;
+            o.attach(newOrder);
+
+            cout << "Order placed successfully." << endl;
+        }
+        else {
+            cout << "Insufficient stock." << endl;
+        }
+    }
+    else {
+        cout << "Product not found." << endl;
+    }
+}
+void returnProduct(clistpro& p, clistord& o, int customerId, int productId) {
+    // Find the order with the specified customer and product IDs
+    orders* currentOrder = o.phead;
+    orders* previousOrder = NULL;
+    while (currentOrder != NULL) {
+        if (currentOrder->cid == customerId && currentOrder->pid == productId) {
+            break;
+        }
+        previousOrder = currentOrder;
+        currentOrder = currentOrder->pnext;
+    }
+
+    if (currentOrder != NULL) {
+        // Increment the stock of the product
+        product* currentProduct = p.phead;
+        while (currentProduct != NULL) {
+            if (currentProduct->pid == productId) {
+                currentProduct->stock++;
+                break;
+            }
+            currentProduct = currentProduct->pnext;
+        }
+
+        // Remove the order node from the list
+        if (previousOrder != NULL) {
+            previousOrder->pnext = currentOrder->pnext;
+        }
+        else {
+            o.phead = currentOrder->pnext;
+        }
+        delete currentOrder;
+
+        // Update the orders file
+        ofstream orderFile("orders.txt");
+        if (orderFile.is_open()) {
+            orders* orderNode = o.phead;
+            while (orderNode != NULL) {
+                orderFile << orderNode->cid << "," << orderNode->pid << "," << orderNode->totprc << "," << orderNode->purm << "," << orderNode->pury << "\n";
+                orderNode = orderNode->pnext;
+            }
+            orderFile.close();
+        }
+        else {
+            cout << "Error: Unable to open orders file." << endl;
+        }
+
+        cout << "Product returned successfully." << endl;
+    }
+    else {
+        cout << "No matching order found." << endl;
+    }
+}
+
+
+int main() {
+    clistpro p;
+    clistcus c;
+    clistord o;
+
+    ifstream file, file2;
+    ofstream file3;
+    string x, y;
+    int z, a, b;
+
+    file.open("prod.txt");
+    if (file.is_open()) {
+        while (getline(file, x)) {
+            string temp[6];
+            int it = 0;
+            for (int i = 0; i < x.length(); i++) {
+                if (x[i] == ',') {
+                    it++;
+                }
+                else {
+                    temp[it] += x[i];
+                }
+            }
+
+            product* pnn = new product;
+            pnn->pid = stoi(temp[0]);
+            pnn->pname = temp[1];
+            pnn->stock = stoi(temp[2]);
+            pnn->prc = stoi(temp[3]);
+            pnn->expm = stoi(temp[4]);
+            pnn->expy = stoi(temp[5]);
+            pnn->pnext = NULL;
+            p.attach(pnn);
+        }
+    }
+    file.close();
+
+    file2.open("customer.txt");
+    if (file2.is_open()) {
+        while (getline(file2, y)) {
+            string temp[2];
+            int it = 0;
+            for (int i = 0; i < y.length(); i++) {
+                if (y[i] == ',') {
+                    it++;
+                }
+                else {
+                    temp[it] += y[i];
+                }
+            }
+
+            customer* cnn = new customer;
+            cnn->cid = stoi(temp[0]);
+            cnn->cname = temp[1];
+            cnn->pnext = NULL;
+            c.attach(cnn);
+        }
+    }
+    file2.close();
+    int n;
+    cout << "how many product want to be selled:"; cin >> n;
+    for (int j = 0; j < n; j++) {
+    cout << "Product list:" << endl;
+    p.display();
+
+    cout << "Customer list:" << endl;
+    c.display();
+
+    buy(p, c, o);
+
+    cout << "Updated Product list:" << endl;
+    p.display();
+
+    cout << "Updated Customer list:" << endl;
+    c.display();
+
+    cout << "Order list:" << endl;
+    o.display();
+    int returnCustomerId, returnProductId;
+    cout << "Enter customer ID for return: ";
+    cin >> returnCustomerId;
+    cout << "Enter product ID for return: ";
+    cin >> returnProductId;
+    returnProduct(p, o, returnCustomerId, returnProductId);
+}
+    file3.open("orders.txt");
+    if (file3.is_open()) {
+        orders* current = o.phead;
+        while (current != NULL) {
+            file3 << current->pid << "," << current->cid << "," << current->totprc <<","<<current->purm<<"," << current->pury << endl;
+            current = current->pnext;
+        }
+    }
+    file3.close();
+
+    return 0;
+}
