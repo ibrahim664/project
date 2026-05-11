@@ -1,0 +1,54 @@
+void main()
+{
+int x[3][2];
+Char y[100];
+Gets_s(y),i,r=0,c=0;
+For(i=0;y[i]!=’\0’;i++)
+{
+If(y[i]==’a’)
+{
+C=0,r=x[r][c];
+}
+If(y[i]==’b’)
+{
+C=1,r=x[r][c];
+}
+}
+If(r==2)
+{
+Cout<<”accepted”;
+}
+Else
+{
+Cout<<”not accepted”;
+}
+}
+
+1)
+Void main()
+{
+int x[20][15],max=-999,min=999,tot=0;
+for(s=0,s<20;s++)
+{
+For(w=0;w<15;w++)
+{
+Cin>>x[s][w];
+}
+}
+For(s=0;s<20;s++)
+{
+Ct=15,tot=0;
+For(w=0;w<15;w++)
+{
+Tot+=x[s][w];
+}
+Avg=tot/ct;
+If(avg>max)
+{
+Max=avg;
+}
+if(avg<min)
+{
+Min=avg;
+}
+}
